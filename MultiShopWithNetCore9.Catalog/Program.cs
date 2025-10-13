@@ -1,12 +1,11 @@
-﻿using Serilog;
-using MongoDB.Driver;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.Extensions.Options;
 using MultiShopWithNetCore9.Catalog.Services.CategoryServices;
 using MultiShopWithNetCore9.Catalog.Services.ProductDetailServices;
 using MultiShopWithNetCore9.Catalog.Services.ProductImageServices;
 using MultiShopWithNetCore9.Catalog.Services.ProductServices;
 using MultiShopWithNetCore9.Catalog.Settings;
+using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
