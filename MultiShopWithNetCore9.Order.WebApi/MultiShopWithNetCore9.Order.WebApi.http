@@ -1,0 +1,6 @@
+@MultiShopWithNetCore9.Order.WebApi_HostAddress = http://localhost:5039
+
+GET {{MultiShopWithNetCore9.Order.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
