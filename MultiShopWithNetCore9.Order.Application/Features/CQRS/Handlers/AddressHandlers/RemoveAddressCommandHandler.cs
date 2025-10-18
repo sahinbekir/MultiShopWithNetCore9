@@ -4,11 +4,11 @@ using MultiShopWithNetCore9.Order.Domain.Entities;
 
 namespace MultiShopWithNetCore9.Order.Application.Features.CQRS.Handlers.AddressHandlers;
 
-public class RemoveAddresCommandHandler
+public class RemoveAddressCommandHandler
 {
     public readonly IGenericRepository<Address> _repository;
 
-    public RemoveAddresCommandHandler(IGenericRepository<Address> repository)
+    public RemoveAddressCommandHandler(IGenericRepository<Address> repository)
     {
         _repository = repository;
     }

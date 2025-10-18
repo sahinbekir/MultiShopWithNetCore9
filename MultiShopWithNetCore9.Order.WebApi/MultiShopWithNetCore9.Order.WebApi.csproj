@@ -12,11 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MultiShopWithNetCore9.Order.Application\MultiShopWithNetCore9.Order.Application.csproj" />
+    <ProjectReference Include="..\MultiShopWithNetCore9.Order.Domain\MultiShopWithNetCore9.Order.Domain.csproj" />
     <ProjectReference Include="..\MultiShopWithNetCore9.Order.Persistence\MultiShopWithNetCore9.Order.Persistence.csproj" />
   </ItemGroup>
 

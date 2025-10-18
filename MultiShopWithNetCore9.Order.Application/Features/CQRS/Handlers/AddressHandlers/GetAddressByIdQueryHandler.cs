@@ -5,15 +5,15 @@ using MultiShopWithNetCore9.Order.Domain.Entities;
 
 namespace MultiShopWithNetCore9.Order.Application.Features.CQRS.Handlers.AddressHandlers;
 
-public class GetAddresByIdQueryHandler
+public class GetAddressByIdQueryHandler
 {
     private readonly IGenericRepository<Address> _repository;
-    public GetAddresByIdQueryHandler(IGenericRepository<Address> repository)
+    public GetAddressByIdQueryHandler(IGenericRepository<Address> repository)
     {
         _repository = repository;
     }
 
-    public async Task<GetAddressByIdQueryResult> Handle(GetAddresByIdQuery query)
+    public async Task<GetAddressByIdQueryResult> Handle(GetAddressByIdQuery query)
     {
         var value = await _repository.GetByIdAsync(query.Id);
         return new GetAddressByIdQueryResult

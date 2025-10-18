@@ -4,11 +4,11 @@ using MultiShopWithNetCore9.Order.Domain.Entities;
 
 namespace MultiShopWithNetCore9.Order.Application.Features.CQRS.Handlers.AddressHandlers;
 
-public class GetAddressQueryHandle
+public class GetAddressQueryHandler
 {
     private readonly IGenericRepository<Address> _repository;
 
-    public GetAddressQueryHandle(IGenericRepository<Address> repository)
+    public GetAddressQueryHandler(IGenericRepository<Address> repository)
     {
         _repository = repository;
     }

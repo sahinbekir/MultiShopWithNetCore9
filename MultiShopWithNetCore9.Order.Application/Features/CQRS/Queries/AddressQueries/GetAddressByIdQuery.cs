@@ -1,10 +1,10 @@
 ﻿namespace MultiShopWithNetCore9.Order.Application.Features.CQRS.Queries.AddressQueries;
 
-public class GetAddresByIdQuery
+public class GetAddressByIdQuery
 {
     public int Id { get; set; }
 
-    public GetAddresByIdQuery(int id)
+    public GetAddressByIdQuery(int id)
     {
         Id = id;
     }

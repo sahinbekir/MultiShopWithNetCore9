@@ -1,6 +1,6 @@
-﻿namespace MultiShopWithNetCore9.Order.Domain.Entities;
+﻿namespace MultiShopWithNetCore9.Order.Application.Features.CQRS.Results.OrderDetailResults;
 
-public class OrderDetail
+public class GetOrderDetailByIdQueryResult
 {
     public int OrderDetailId { get; set; }
     public string ProductId { get; set; }
@@ -9,5 +9,4 @@ public class OrderDetail
     public int ProductAmount { get; set; }
     public decimal ProductTotalPrice { get; set; }
     public int OrderingId { get; set; }
-    public Ordering Ordering { get; set; }
 }
