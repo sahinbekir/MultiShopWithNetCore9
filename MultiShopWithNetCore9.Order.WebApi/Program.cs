@@ -2,9 +2,12 @@ using MultiShopWithNetCore9.Order.Application.Features.CQRS.Handlers.AddressHand
 using MultiShopWithNetCore9.Order.Application.Features.CQRS.Handlers.OrderDetailHandlers;
 using MultiShopWithNetCore9.Order.Application.Interfaces;
 using MultiShopWithNetCore9.Order.Application.Services;
+using MultiShopWithNetCore9.Order.Persistence.Context;
 using MultiShopWithNetCore9.Order.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<OrderContext>();
 
 // Add services to the container.
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -46,3 +49,13 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+/*
+>docker images
+>docker volume create portainer_data
+>docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
+>docker rm -f portainer
+>docker run -d -p 8001:8000 -p 9443:9443 -p 9000:9000 --name portainer --restart=always -v portainer_data:/data -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer-ce:latest
+ */
+//https://localhost:9443/
+//admin Aa.1234567890

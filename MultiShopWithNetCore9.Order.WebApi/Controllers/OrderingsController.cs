@@ -31,7 +31,7 @@ namespace MultiShopWithNetCore9.Order.WebApi.Controllers
         public async Task<IActionResult> CreateOrdering(CreateOrderingCommand createOrderingCommand)
         {
             await _mediator.Send(createOrderingCommand);
-            return Ok();
+            return Ok("Item Created");
         }
         [HttpPut]
         public async Task<IActionResult> UpdateOrdering(UpdateOrderingCommand updateOrderingCommand)
