@@ -85,6 +85,32 @@
             "response": []
         },
         {
+            "name": "Address",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{access_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "https://localhost:7081/api/Addresses",
+                    "protocol": "https",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "7081",
+                    "path": [
+                        "api",
+                        "Addresses"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
             "name": "OrderDetail",
             "request": {
                 "method": "GET",
@@ -111,26 +137,35 @@
             "response": []
         },
         {
-            "name": "Address",
+            "name": "Register",
             "request": {
-                "method": "GET",
+                "method": "POST",
                 "header": [
                     {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
+                        "key": "Content-Type",
+                        "value": "application/json",
                         "type": "text"
                     }
                 ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n    \"UserName\": \"sahinbekir\",\r\n    \"Password\": \"Aa.12345\",\r\n    \"Email\": \"sahin@bekir.tr\",\r\n    \"PhoneNumber\": \"55123467890\",\r\n    \"Name\": \"Bekir\",\r\n    \"Surname\": \"Sahin\"\r\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
                 "url": {
-                    "raw": "https://localhost:7081/api/Addresses",
+                    "raw": "https://localhost:5001/api/Register",
                     "protocol": "https",
                     "host": [
                         "localhost"
                     ],
-                    "port": "7081",
+                    "port": "5001",
                     "path": [
                         "api",
-                        "Addresses"
+                        "Register"
                     ]
                 }
             },

@@ -1,11 +1,15 @@
 using System.Globalization;
-using Duende.IdentityServer;
 using AuthServer;
+using Duende.IdentityServer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MultiShopWithNetCore9.IdentityServer.Context;
+using MultiShopWithNetCore9.IdentityServer.Models;
 using Serilog;
 using Serilog.Filters;
 
-namespace AuthServer;
+namespace MultiShopWithNetCore9.IdentityServer;
 
 internal static class HostingExtensions
 {
@@ -47,6 +51,26 @@ internal static class HostingExtensions
     {
         builder.Services.AddRazorPages();
 
+        // (A) DbContext
+        builder.Services.AddDbContext<AppIdentityDbContext>(opts =>
+            opts.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
+
+        // (B) ASP.NET Core Identity
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt =>
+        {
+            opt.Password.RequiredLength = 6;
+            opt.Password.RequireNonAlphanumeric = false;
+            opt.Password.RequireUppercase = false;
+            opt.Password.RequireLowercase = false;
+            opt.Password.RequireDigit = false;
+            opt.User.RequireUniqueEmail = false;
+        })
+        .AddEntityFrameworkStores<AppIdentityDbContext>()
+        .AddDefaultTokenProviders();
+
+        // (D) API Controller’larý EKLE (404 ilacý)
+        builder.Services.AddControllers();
+
         // Swagger UI (Order.WebApi) origin'ine izin ver
         builder.Services.AddCors(options =>
         {
@@ -62,31 +86,31 @@ internal static class HostingExtensions
                  .AllowAnyMethod());
         });
 
-
         var isBuilder = builder.Services.AddIdentityServer(options =>
+        {
+            options.Events.RaiseErrorEvents = true;
+            options.Events.RaiseInformationEvents = true;
+            options.Events.RaiseFailureEvents = true;
+            options.Events.RaiseSuccessEvents = true;
+
+            // Community lisansýný açýkça bildir (appsettings varsa onu kullan, yoksa 'community')
+            //options.LicenseKey = builder.Configuration["Duende:LicenseKey"] ?? "community";
+
+            // Otomatik anahtar yönetimini kapat (Business/Enterprise gerektirir)
+            options.KeyManagement.Enabled = false;
+
+            // Use a large chunk size for diagnostic logs in development where it will be redirected to a local file
+            if (builder.Environment.IsDevelopment())
             {
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
+                options.Diagnostics.ChunkSize = 1024 * 1024 * 10; // 10 MB
+            }
+        })
+        //.AddTestUsers(TestUsers.Users)
+        .AddAspNetIdentity<ApplicationUser>()
+        .AddLicenseSummary()
 
-                // Community lisansýný açýkça bildir (appsettings varsa onu kullan, yoksa 'community')
-                //options.LicenseKey = builder.Configuration["Duende:LicenseKey"] ?? "community";
-
-                // Otomatik anahtar yönetimini kapat (Business/Enterprise gerektirir)
-                options.KeyManagement.Enabled = false;
-
-                // Use a large chunk size for diagnostic logs in development where it will be redirected to a local file
-                if (builder.Environment.IsDevelopment())
-                {
-                    options.Diagnostics.ChunkSize = 1024 * 1024 * 10; // 10 MB
-                }
-            })
-            .AddTestUsers(TestUsers.Users)
-            .AddLicenseSummary()
-
-            // KeyManagement'ý kapatýnca bir imzalama anahtarý vermemiz gerekir
-            .AddDeveloperSigningCredential(); // DEV için yeterli
+        // KeyManagement'ý kapatýnca bir imzalama anahtarý vermemiz gerekir
+        .AddDeveloperSigningCredential(); // DEV için yeterli
 
         // in-memory, code config
         isBuilder.AddInMemoryIdentityResources(Config.IdentityResources);
@@ -126,16 +150,23 @@ internal static class HostingExtensions
                 };
             });
 
+        // (Ýsteðe baðlý) Swagger
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
         return builder.Build();
     }
 
-    public static WebApplication ConfigurePipeline(this WebApplication app)
+
+    public static async Task<WebApplication> ConfigurePipelineAsync(this WebApplication app)
     {
         app.UseSerilogRequestLogging();
 
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
 
         app.UseStaticFiles();
@@ -145,11 +176,38 @@ internal static class HostingExtensions
         app.UseCors("swagger");
 
         app.UseIdentityServer();
+        app.UseAuthentication();   // <-- EKLE
         app.UseAuthorization();
+
+        app.MapControllers();      // <-- EKLE (api/Register artýk var)
 
         app.MapRazorPages()
             .RequireAuthorization();
 
+        app.MapGet("/ok", () => "ok");
+
+        //await SeedData.EnsureSeedAsync(app);
+
+
         return app;
+    }
+
+
+    public static class SeedData
+    {
+        public static async Task EnsureSeedAsync(IApplicationBuilder app)
+        {
+            using var scope = app.ApplicationServices.CreateScope();
+            var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            var user = await userMgr.FindByNameAsync("admin");
+            if (user == null)
+            {
+                user = new ApplicationUser { UserName = "admin", Email = "admin@local" };
+                var result = await userMgr.CreateAsync(user, "Aa.123456"); // DEV þifresi
+                if (!result.Succeeded) throw new Exception(string.Join(",", result.Errors.Select(e => e.Description)));
+            }
+        }
     }
 }
