@@ -16,6 +16,8 @@ builder.Services.AddAuthentication("Bearer")
         options.Authority = "https://localhost:5001"; // IdentityServer (AuthServer)
         options.RequireHttpsMetadata = false;          // DEV için
         options.TokenValidationParameters.ValidateAudience = false;
+        //options.Audience = "OrderAPI";
+        // options.TokenValidationParameters.ValidTypes = new[] { "at+jwt", "JWT" }; // (gerekirse)
     });
 
 builder.Services.AddAuthorization(options =>
