@@ -130,8 +130,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//Add Middleware
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+//app.MapControllers();
+app.MapControllers().RequireAuthorization("ApiScope");
 
 app.Run();
