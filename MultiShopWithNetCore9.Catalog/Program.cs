@@ -1,5 +1,9 @@
-﻿using System.Reflection;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models; // Swagger için
+
+using System.Reflection;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using MultiShopWithNetCore9.Catalog.Services.CategoryServices;
 using MultiShopWithNetCore9.Catalog.Services.ProductDetailServices;
 using MultiShopWithNetCore9.Catalog.Services.ProductImageServices;
@@ -16,6 +20,31 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+
+
+
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = "https://localhost:5001"; // IdentityServer (AuthServer)
+        options.RequireHttpsMetadata = false;          // DEV için
+        options.TokenValidationParameters.ValidateAudience = false;
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "multishop.api");
+    });
+});
+
+
+
+
 
 builder.Host.UseSerilog();
 
@@ -41,7 +70,42 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 // 🔹 Swagger ekle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Swagger + OAuth2 (client credentials)
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog API", Version = "v1" });
+
+    var oauthScheme = new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Scheme = "Bearer",
+        Flows = new OpenApiOAuthFlows
+        {
+            ClientCredentials = new OpenApiOAuthFlow
+            {
+                TokenUrl = new Uri("https://localhost:5001/connect/token"),
+                Scopes = new Dictionary<string, string>
+                {
+                    { "multishop.api", "MultiShop API" }
+                }
+            }
+        }
+    };
+
+    c.AddSecurityDefinition("oauth2", oauthScheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
+            },
+            new[] { "multishop.api" }
+        }
+    });
+});
 
 
 var app = builder.Build();
@@ -51,7 +115,17 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(opt =>
+    {
+        opt.SwaggerEndpoint("/swagger/v1/swagger.json", "Catalog API v1");
+
+        // OAuth2 client ayarları (AuthServer/Config.cs ile uyumlu)
+        opt.OAuthClientId("swagger");
+        opt.OAuthClientSecret("secret");
+        opt.OAuthScopes("multishop.api");
+
+        // Client Credentials’ta PKCE gerekmez; ek bir ayar şart değil
+    });
 }
 
 app.UseHttpsRedirection();

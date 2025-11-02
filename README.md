@@ -1,2 +1,25 @@
 # MultiShopWithNetCore9
-MicroServices, Portainer, Docker, MS SQL, Mongo, DBeaver, MediatR, AutoMapping, CQRS, Onion Architecture
+EXAMPLES:
+MicroServices,
+Portainer,
+Docker,
+MS SQL Server,
+PostgreSQL,
+MongoDB,
+DBeaver,
+MediatR,
+AutoMapping,
+CQRS,
+Onion Architecture,
+Clean Architecture,
+Identity,
+IdentityServer7,
+OpenID,
+OAuth2,
+JWT,
+Redis,
+RabbitMQ,
+SignalR,
+Ocelot,
+Postman
+

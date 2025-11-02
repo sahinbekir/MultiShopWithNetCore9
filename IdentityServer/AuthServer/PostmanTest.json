@@ -1,0 +1,140 @@
+{
+    "info": {
+        "_postman_id": "b3b4acf1-0670-4718-882d-3b9f328e1ece",
+        "name": "MultiShop",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "49728441",
+        "_collection_link": "https://sahinbekir-8547217.postman.co/workspace/Bekir-%C5%9Eahin's-Workspace~7e504b83-be74-49ad-8402-c87afa2648cb/collection/49728441-b3b4acf1-0670-4718-882d-3b9f328e1ece?action=share&source=collection_link&creator=49728441"
+    },
+    "item": [
+        {
+            "name": "Auth Token",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/x-www-form-urlencoded",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "urlencoded",
+                    "urlencoded": [
+                        {
+                            "key": "grant_type",
+                            "value": "client_credentials",
+                            "type": "text"
+                        },
+                        {
+                            "key": "client_id",
+                            "value": "swagger",
+                            "type": "text"
+                        },
+                        {
+                            "key": "client_secret",
+                            "value": "secret",
+                            "type": "text"
+                        },
+                        {
+                            "key": "scope",
+                            "value": "multishop.api",
+                            "type": "text"
+                        }
+                    ]
+                },
+                "url": {
+                    "raw": "https://localhost:5001/connect/token",
+                    "protocol": "https",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "5001",
+                    "path": [
+                        "connect",
+                        "token"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Ordering",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{access_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "https://localhost:7081/api/Orderings",
+                    "protocol": "https",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "7081",
+                    "path": [
+                        "api",
+                        "Orderings"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "OrderDetail",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{access_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "https://localhost:7081/api/OrderDetail",
+                    "protocol": "https",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "7081",
+                    "path": [
+                        "api",
+                        "OrderDetail"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Address",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{access_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "https://localhost:7081/api/Addresses",
+                    "protocol": "https",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "7081",
+                    "path": [
+                        "api",
+                        "Addresses"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}
