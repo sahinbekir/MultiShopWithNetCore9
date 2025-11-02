@@ -53,6 +53,7 @@ internal static class HostingExtensions
             options.AddPolicy("swagger", p =>
                 p.WithOrigins
                     (
+                    "https://localhost:7081", // Order.WebApi Swagger
                     "https://localhost:7043", // Order.WebApi Swagger
                     "https://localhost:7050", // Catalog.WebApi Swagger
                     "https://localhost:7251"  // Discount.WebApi Swagger
