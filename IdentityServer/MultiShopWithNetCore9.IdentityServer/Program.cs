@@ -22,6 +22,10 @@ try
     // Pipeline async (seed vb.)
     await app.ConfigurePipelineAsync();  // <-- Burasý await olmalý
 
+    app.UseIdentityServer();     // önce IdentityServer
+    app.UseAuthentication();     // sonra auth
+    app.UseAuthorization();      // sonra authorization
+
     // (Ýstersen usage summary kýsmýný buraya taþýyabilirsin)
     app.Run();
 }

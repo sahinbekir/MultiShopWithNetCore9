@@ -68,6 +68,16 @@ internal static class HostingExtensions
         .AddEntityFrameworkStores<AppIdentityDbContext>()
         .AddDefaultTokenProviders();
 
+        builder.Services.AddLocalApiAuthentication();
+
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(IdentityServerConstants.LocalApi.PolicyName, policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.AddAuthenticationSchemes(IdentityServerConstants.LocalApi.AuthenticationScheme);
+            });
+
+
         // (D) API Controller’larý EKLE (404 ilacý)
         builder.Services.AddControllers();
 
@@ -105,6 +115,7 @@ internal static class HostingExtensions
                 options.Diagnostics.ChunkSize = 1024 * 1024 * 10; // 10 MB
             }
         })
+            .AddInMemoryApiResources(Config.ApiResources)
         //.AddTestUsers(TestUsers.Users)
         .AddAspNetIdentity<ApplicationUser>()
         .AddLicenseSummary()

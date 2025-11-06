@@ -30,7 +30,8 @@ builder.Services.AddAuthentication("Bearer")
     {
         options.Authority = "https://localhost:5001"; // IdentityServer (AuthServer)
         options.RequireHttpsMetadata = false;          // DEV için
-        options.TokenValidationParameters.ValidateAudience = false;
+        options.TokenValidationParameters.ValidateAudience = true;
+        options.Audience = "ResourceCatalog";
     });
 
 builder.Services.AddAuthorization(options =>
@@ -38,9 +39,25 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ApiScope", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim("scope", "multishop.api");
+        policy.RequireAssertion(ctx =>
+        {
+            var raw = ctx.User.FindAll("scope").Select(c => c.Value);
+            var scopes = new HashSet<string>(
+                raw.SelectMany(v => v.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            );
+            return scopes.Contains("CatalogFullPermission");
+        });
     });
 });
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("ApiScope", policy =>
+//    {
+//        policy.RequireAuthenticatedUser();
+//        policy.RequireClaim("scope", "CatalogFullPermission");
+//    });
+//});
 
 
 
@@ -88,7 +105,7 @@ builder.Services.AddSwaggerGen(c =>
                 TokenUrl = new Uri("https://localhost:5001/connect/token"),
                 Scopes = new Dictionary<string, string>
                 {
-                    { "multishop.api", "MultiShop API" }
+                    { "CatalogFullPermission", "MultiShop API Catalog" }
                 }
             }
         }
@@ -102,7 +119,7 @@ builder.Services.AddSwaggerGen(c =>
             {
                 Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
             },
-            new[] { "multishop.api" }
+            new[] { "CatalogFullPermission" }
         }
     });
 });
@@ -122,7 +139,7 @@ if (app.Environment.IsDevelopment())
         // OAuth2 client ayarları (AuthServer/Config.cs ile uyumlu)
         opt.OAuthClientId("swagger");
         opt.OAuthClientSecret("secret");
-        opt.OAuthScopes("multishop.api");
+        opt.OAuthScopes("CatalogFullPermission");
 
         // Client Credentials’ta PKCE gerekmez; ek bir ayar şart değil
     });

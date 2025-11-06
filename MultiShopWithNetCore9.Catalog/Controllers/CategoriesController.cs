@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MultiShopWithNetCore9.Catalog.Dtos.CategoryDtos;
 using MultiShopWithNetCore9.Catalog.Services.CategoryServices;
 
 namespace MultiShopWithNetCore9.Catalog.Controllers;
-
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class CategoriesController : ControllerBase

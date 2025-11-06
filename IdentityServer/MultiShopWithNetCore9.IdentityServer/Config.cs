@@ -1,14 +1,26 @@
+using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 
 namespace AuthServer;
 
 public static class Config
 {
+    public static IEnumerable<ApiResource> ApiResources =>
+        new ApiResource[]
+        {
+            new ApiResource("ResourceCatalog")
+            {
+                Scopes={"CatalogFullPermission"}
+            },
+            new ApiResource(IdentityServerConstants.LocalApi.ScopeName)
+        };
+
     // OpenID Connect standart kimlik kaynaklarý
     public static IEnumerable<IdentityResource> IdentityResources =>
         new IdentityResource[]
         {
             new IdentityResources.OpenId(),
+            new IdentityResources.Email(),
             new IdentityResources.Profile(),
         };
 
@@ -16,12 +28,69 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-            new ApiScope("multishop.api", "MultiShop API")
+            new ApiScope("multishop.api", "MultiShop API"),
+            new ApiScope("CatalogFullPermission", "Full Auth for Catalog"),
+            new ApiScope(IdentityServerConstants.LocalApi.ScopeName)
         };
 
     public static IEnumerable<Client> Clients =>
         new Client[]
         {
+            new Client
+            {
+                ClientId = "Catalogswagger",
+                ClientName = "Catalog Swagger Client",
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets = { new Secret("secret".Sha256()) },
+                AllowedScopes = { "multishop.api", "CatalogFullPermission" } // hangi API eriþimi gerekliyse
+            },
+
+
+            //new Client
+            //{
+            //    ClientId = "CatalogUser",
+            //    ClientName = "Catalog Web",
+            //    RequireClientSecret = false,
+            //    AllowedGrantTypes = GrantTypes.ClientCredentials,
+            //    RedirectUris = { "https://localhost:5173/signin-oidc" },
+            //    PostLogoutRedirectUris = { "https://localhost:5173/signout-callback-oidc" },
+
+            //    AllowedScopes =
+            //    { "openid", "profile", "CatalogFullPermission", "offline_access", IdentityServerConstants.LocalApi.ScopeName,
+            //    IdentityServerConstants.StandardScopes.Email,
+            //    IdentityServerConstants.StandardScopes.OpenId,
+            //    },
+            //    AllowOfflineAccess = true,
+            //    // Geliþtirme ortamýnda CORS'a takýlmamak için izinli origin'ler:
+            //    AllowedCorsOrigins = { "https://localhost:5173" },
+            //    AccessTokenLifetime = 600
+            //},
+            new Client
+            {
+                ClientId = "CatalogUser",
+                ClientName = "Catalog Web (Machine to Machine)",
+                RequireClientSecret = true,
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                ClientSecrets =
+                {
+                    new Secret("secret".Sha256())
+                },
+
+                AllowedScopes =
+                {
+                    //"multishop.api",
+                    "CatalogFullPermission",
+                    IdentityServerConstants.LocalApi.ScopeName,
+                    IdentityServerConstants.StandardScopes.Email,
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile
+                },
+
+                AccessTokenLifetime = 600 // 10 dakika (isteðe göre artýr)
+            },
+
+
             // Swagger/Postman vb. için Client Credentials client
             new Client
             {
